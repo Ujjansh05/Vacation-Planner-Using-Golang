@@ -2,16 +2,19 @@ package routes
 
 import (
 	"net/http"
-
+	"langchaingo/chains"
 	"github.com/gin-gonic/gin"
+	"github.com/google.uuid"
 )
 
 func generateVacation( r GenerateVacationIdeaRequest) GenerateVacationIdeaResponse{
-
+		id := uuid.New()
+		go chains.GenerateVacationIdeaChange(id, r.Budget, r.FavouriteSeason, r.Hobbies)
+		return GenerateVacationIdeaResponse{Id : id, Completed: false}
 }
 
 func getVacation(id uuid.UUID) (GetVacationIdeaResponse, error){
-	v, err := chainsGetVactionromDb(id)
+	v, err := chains.GetVacationFromDb(id)
 
 	if err := nil {
 		return GetVacationIdeaResponse{}, err
@@ -42,10 +45,13 @@ func GetVactionRouter(router *gin.Engine) *gin.Engine{
 		} else {
 			resp, err := getVacation(id)
 			if err != nil {
-				c.JSON(http.StatusNotFound, gin.M){
+				c.JSON(http.StatusNotFound, gin.M{
 					"message": "Id Not Found",
-				}
+				})
+			} else {
+				c.JSON(http.StatusOk, resp)
 			}
 		}
 	})
+	return router
 }

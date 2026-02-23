@@ -1,10 +1,11 @@
 package routes
 
 import (
-	"net/http"
 	"langchaingo/chains"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
-	"github.com/google.uuid"
+	"github.com/google/uuid"
 )
 
 func generateVacation( r GenerateVacationIdeaRequest) GenerateVacationIdeaResponse{
@@ -15,43 +16,38 @@ func generateVacation( r GenerateVacationIdeaRequest) GenerateVacationIdeaRespon
 
 func getVacation(id uuid.UUID) (GetVacationIdeaResponse, error){
 	v, err := chains.GetVacationFromDb(id)
-
-	if err := nil {
+	if err != nil {
 		return GetVacationIdeaResponse{}, err
 	}
-	return GetVacationIdeaResponse{Id: v.Id, Completed: V.Completed,Idea: V.Idea}, nil
+	return GetVacationIdeaResponse{Id: v.Id, Completed: v.Completed, Idea: v.Idea}, nil
 }
 
-func GetVactionRouter(router *gin.Engine) *gin.Engine{
+func GetVacationRouter(router *gin.Engine) *gin.Engine{
 	registrationRoutes := router.Group("/Vacation")
 
 	registrationRoutes.POST("/create", func(c *gin.Context){
-		var req.GenraeGenerateVacationIdeaRequest
-		err :=c.BindJSON(&req)
-		if err := nil {
-			c.JSON(http.StatusBadRequest, gin.M{
-				"message":"Bad Request"
+		var req GenerateVacationIdeaRequest
+		err := c.BindJSON(&req)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": "Bad Request",
 			})
-		} else{
-			c.JSON(http.StatusOK. generateVacation(req))
+			return
 		}
+		c.JSON(http.StatusOK, generateVacation(req))
 	})
-	registrationRoutes.GET(":/id",func(c *gin.Context){
-		id, err := uuid.Parase(c.Param("id"))
-		if err := nil{
-			c.JSON(http.StatusBadRequest, gin.M{
-				"message":"Bad Request"
-			})
-		} else {
-			resp, err := getVacation(id)
-			if err != nil {
-				c.JSON(http.StatusNotFound, gin.M{
-					"message": "Id Not Found",
-				})
-			} else {
-				c.JSON(http.StatusOk, resp)
-			}
+	registrationRoutes.GET("/:id", func(c *gin.Context){
+		id, err := uuid.Parse(c.Param("id"))
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid ID"})
+			return
 		}
+		resp, err := getVacation(id)
+		if err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"message": "Vacation not found"})
+			return
+		}
+		c.JSON(http.StatusOK, resp)
 	})
 	return router
 }

@@ -1,12 +1,13 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
 	"langchaingo/routes"
+
+	"github.com/gin-gonic/gin"
 )
 
-func main(){
-	r:= ginDefault()
-	routes.GetVactionRouter(r)
-	r.run()
+func main() {
+	r := gin.Default()
+	routes.GetVacationRouter(r)
+	r.Run()
 }

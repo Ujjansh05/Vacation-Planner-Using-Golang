@@ -1,22 +1,24 @@
 package routes
 
+import "github.com/google/uuid"
 
-import uuid "github.com/jackc/pgx/pgtype/ext/gofrs-uuid"
 
 type GenerateVacationIdeaRequest struct{
-	Favourite Season string `json: "favourite_season"`
+FavouriteSeason string `json:"favourite_season"`
 	Hobbies []string `json:"hobbies"`
 	Budget int `json:"budget"`
 }
 
 type GenerateVacationIdeaResponse struct{
-	Id  		uuid.UUID 		`json:"ID"`
-	Completed	bool			`json:"Completed"`
+Id  		uuid.UUID 		`json:"id"`
+Completed	bool			`json:"completed"`
 }
 
 
 type GetVacationIdeaResponse struct{
-	Id				uuid.UUID		`json:"id"`
-	Completed		bool 			`json: "completed"`
-	Idea			string      	`json:"idea"`
+Id				uuid.UUID		`json:"id"`
+Completed		bool 			`json:"completed"`
+Idea			string      	`json:"idea"`
 }
+
+

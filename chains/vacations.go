@@ -34,18 +34,43 @@ func GenerateVacationIdeaChange(id uuid.UUID, budget int, season string, hobbies
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	apiKey := os.Getenv("OPENAI_API_KEY")
+	apiKey := strings.TrimSpace(os.Getenv("OPENAI_API_KEY"))
+	model := strings.TrimSpace(os.Getenv("OPENAI_MODEL"))
+	provider := "OpenAI"
+	llmOptions := []openai.Option{}
+
+	if model == "" {
+		model = "gpt-4o-mini"
+	}
+
+	openRouterKey := strings.TrimSpace(os.Getenv("OPENROUTER_API_KEY"))
+	if openRouterKey != "" {
+		provider = "OpenRouter"
+		apiKey = openRouterKey
+
+		model = strings.TrimSpace(os.Getenv("OPENROUTER_MODEL"))
+		if model == "" {
+			model = "openai/gpt-4o-mini"
+		}
+
+		baseURL := strings.TrimSpace(os.Getenv("OPENROUTER_BASE_URL"))
+		if baseURL == "" {
+			baseURL = "https://openrouter.ai/api/v1"
+		}
+
+		llmOptions = append(llmOptions, openai.WithBaseURL(baseURL))
+	}
+
 	if apiKey == "" {
-		log.Printf("OPENAI_API_KEY is not set")
+		log.Printf("OPENROUTER_API_KEY or OPENAI_API_KEY is not set")
 		return
 	}
 
-	llmClient, err := openai.New(
-		openai.WithToken(apiKey),
-		openai.WithModel("gpt-4o-mini"),
-	)
+	llmOptions = append(llmOptions, openai.WithToken(apiKey), openai.WithModel(model))
+
+	llmClient, err := openai.New(llmOptions...)
 	if err != nil {
-		log.Printf("OpenAI client error: %v", err)
+		log.Printf("%s client error: %v", provider, err)
 		return
 	}
 
@@ -68,7 +93,7 @@ func GenerateVacationIdeaChange(id uuid.UUID, budget int, season string, hobbies
 		openai.WithMaxCompletionTokens(350),
 	)
 	if err != nil {
-		log.Printf("OpenAI generation error: %v", err)
+		log.Printf("%s generation error: %v", provider, err)
 		return
 	}
 

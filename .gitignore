@@ -1,0 +1,58 @@
+# -----------------------------
+# Secrets and local config
+# -----------------------------
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+
+# -----------------------------
+# Go build/test artifacts
+# -----------------------------
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+coverage.out
+cover.out
+
+# Common binary names
+langchaingo
+langchaingo.exe
+VacationPlanner
+VacationPlanner.exe
+
+# -----------------------------
+# Logs and temp files
+# -----------------------------
+*.log
+tmp/
+temp/
+build/
+dist/
+
+# -----------------------------
+# Editor / IDE
+# -----------------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# -----------------------------
+# OS files
+# -----------------------------
+.DS_Store
+Thumbs.db
+
+# -----------------------------
+# Optional Go workspace files
+# -----------------------------
+go.work
+go.work.sum

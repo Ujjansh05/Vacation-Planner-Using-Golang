@@ -1,6 +1,6 @@
 # VacationPlanner
 
-A small Go API that generates vacation itineraries with OpenAI through `langchaingo`.
+A small Go API that generates vacation itineraries through `langchaingo` using OpenAI-compatible providers (OpenAI and OpenRouter).
 
 The app exposes two endpoints:
 - `POST /Vacation/create` to start generating a vacation idea.
@@ -35,14 +35,16 @@ VacationPlanner/
 
 1. Client sends vacation preferences to `POST /Vacation/create`.
 2. API returns a generated UUID immediately with `completed: false`.
-3. Background goroutine calls OpenAI using `langchaingo`.
+3. Background goroutine calls an OpenAI-compatible provider using `langchaingo`.
 4. Generated itinerary is saved in memory and marked `completed: true`.
 5. Client polls `GET /Vacation/:id` until completed.
 
 ## Prerequisites
 
 - Go installed (project `go.mod` declares `go 1.25.0`)
-- A valid OpenAI API key with available quota
+- A valid API key with available quota:
+  - OpenAI key, or
+  - OpenRouter key
 
 ## Run Locally
 
@@ -51,6 +53,15 @@ From project directory:
 ```bat
 cd C:\Users\ujjan\Music\Go\VacationPlanner
 set "OPENAI_API_KEY=YOUR_OPENAI_KEY"
+go run main.go
+```
+
+OpenRouter test example:
+
+```bat
+cd C:\Users\ujjan\Music\Go\VacationPlanner
+set "OPENROUTER_API_KEY=YOUR_OPENROUTER_KEY"
+set "OPENROUTER_MODEL=openai/gpt-4o-mini"
 go run main.go
 ```
 
@@ -134,7 +145,11 @@ Possible responses:
 
 ## Environment Variables
 
-- `OPENAI_API_KEY` (required): API key used by `langchaingo/llms/openai`.
+- `OPENROUTER_API_KEY` (optional, preferred for OpenRouter): if set, the app routes requests through OpenRouter.
+- `OPENROUTER_MODEL` (optional): defaults to `openai/gpt-4o-mini`.
+- `OPENROUTER_BASE_URL` (optional): defaults to `https://openrouter.ai/api/v1`.
+- `OPENAI_API_KEY` (optional fallback): used when `OPENROUTER_API_KEY` is not set.
+- `OPENAI_MODEL` (optional): defaults to `gpt-4o-mini`.
 - `PORT` (optional): Gin defaults to `8080` when not set.
 
 ## Security Notes
@@ -146,8 +161,8 @@ Possible responses:
 
 ## Troubleshooting
 
-- `OPENAI_API_KEY is not set`
-  - Set the variable in the same terminal session before `go run`.
+- `OPENROUTER_API_KEY or OPENAI_API_KEY is not set`
+  - Set one of those variables in the same terminal session before `go run`.
 - `OpenAI generation error: ... 429 ... exceeded your current quota`
   - Billing/quota issue in OpenAI account or project.
   - Add credits/payment method, confirm project budget, then use a valid key.

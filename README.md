@@ -152,12 +152,6 @@ Possible responses:
 - `OPENAI_MODEL` (optional): defaults to `gpt-4o-mini`.
 - `PORT` (optional): Gin defaults to `8080` when not set.
 
-## Security Notes
-
-- Never commit API keys.
-- Keep keys in environment variables or untracked local files like `.env`.
-- If a key is exposed, rotate/revoke it immediately.
-- `.gitignore` is configured to exclude common secret and local artifact files.
 
 ## Troubleshooting
 
@@ -176,7 +170,7 @@ Possible responses:
 - No synchronization for concurrent writes to shared in-memory slice.
 - No auth/rate limiting for public endpoints.
 
-## Suggested Next Improvements
+## Future Next Improvements
 
 1. Add persistent storage (PostgreSQL or SQLite).
 2. Add mutex protection around shared in-memory data if kept.
